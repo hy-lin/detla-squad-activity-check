@@ -3,15 +3,14 @@ Created on Jul 2, 2016
 
 @author: Cog Vokan
 '''
-import urllib2
+import urllib.request
 import xml.etree.ElementTree as ET
 
 
 def getID(character_name):
     character_name = character_name.replace(' ', '%20')
     api_address =  'https://api.eveonline.com/eve/CharacterID.xml.aspx?names={}'.format(character_name)
-    request = urllib2.Request(api_address)
-    respond = urllib2.urlopen(request)
+    respond = urllib.request.urlopen(api_address)
     character_info = respond.read()
     
     infos = character_info.split('\n')
@@ -22,10 +21,9 @@ def getID(character_name):
 
     return int(character_info.get('characterID'))
 
-def getCorpName(id):
-    api_address =  'https://api.eveonline.com//eve/CharacterInfo.xml.aspx?characterID={}'.format(id)
-    request = urllib2.Request(api_address)
-    respond = urllib2.urlopen(request)
+def getCorpName(character_ID):
+    api_address =  'https://api.eveonline.com//eve/CharacterInfo.xml.aspx?characterID={}'.format(character_ID)
+    respond = urllib.request.urlopen(api_address)
     character_info = respond.read()
     
     infos = character_info.split('\n')
@@ -35,10 +33,9 @@ def getCorpName(id):
 
     return character_info.text
 
-def getKillPerMonth(id, month = '201606'):
-    api_address = 'https://zkillboard.com/api/stats/characterID/{}'.format(id, month)
-    request = urllib2.Request(api_address)
-    respond = urllib2.urlopen(request)
+def getKillPerMonth(character_ID, month = '201606'):
+    api_address = 'https://zkillboard.com/api/stats/characterID/{}'.format(character_ID, month)
+    respond = urllib.request.urlopen(api_address)
     stats = eval(respond.read())
     try:
         return stats['months'][month]['shipsDestroyed']
