@@ -4,6 +4,7 @@ Created on Jul 2, 2016
 @author: Cog Vokan
 '''
 import urllib.request
+import datetime
 import xml.etree.ElementTree as ET
 
 
@@ -32,6 +33,42 @@ def getCorpName(character_ID):
             character_info = ET.fromstring(line)
 
     return character_info.text
+
+class ZKillRequest(urllib.request.Request):
+    def __init__(self, character_ID, page):
+        url = 'https://zkillboard.com/api/characterID/{}/page/{}/no-items/'.format(character_ID, page)
+        urllib.request.Request.__init__(self, url = url, \
+            headers = {'User-Agent': 'https://pleaseignore.com Maintainer: CogVokan@pleaseignore.com'}) 
+
+def getKillMails(character_ID):
+    kms = []
+    page = 1
+    current_time = datetime.datetime(1111, 11, 11)
+    current_time = current_time.today()
+    
+    enough_km = False
+    while not enough_km:
+        km_request = ZKillRequest(character_ID, page)
+        respond = urllib.request.urlopen(km_request)
+        new_kms = eval(respond.read())
+        
+        km_time = datetime.datetime(1111, 11, 11)
+        km_time = km_time.strptime(new_kms[-1]['killTime'], '%Y-%m-%d %H:%M:%S')
+        
+        diff = current_time - km_time
+        if diff.days >= 100:
+            enough_km = True
+        
+        if len(new_kms) < 200:
+            enough_km = True    
+            
+        kms += new_kms
+        if len(kms) >= 800:
+            enough_km = True
+        
+        page += 1
+        
+    return kms
 
 def getKillPerMonth(character_ID, month = '201606'):
     api_address = 'https://zkillboard.com/api/stats/characterID/{}'.format(character_ID, month)
