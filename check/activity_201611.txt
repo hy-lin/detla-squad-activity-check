@@ -1,1 +1,3 @@
-Cog Vokan/tDreddit/t0/nCornak Firefist/tDreddit/t0/nBlue Ice/tDreddit/t0/n
+Cog Vokan	Dreddit	3
+Cornak Firefist	Dreddit	59
+Blue Ice	Dreddit	67

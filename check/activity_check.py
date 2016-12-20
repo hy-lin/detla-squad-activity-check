@@ -43,8 +43,8 @@ class ZKillRequest(urllib.request.Request):
             headers = {'User-Agent': 'https://pleaseignore.com Maintainer: CogVokan@pleaseignore.com'})
         
 class ZKillStatsRequest(urllib.request.Request):
-    def __init__(self, character_ID, month):
-        url = 'https://zkillboard.com/api/stats/characterID/{}/{}/'.format(character_ID, month)
+    def __init__(self, character_ID):
+        url = 'https://zkillboard.com/api/stats/characterID/{}/'.format(character_ID)
         urllib.request.Request.__init__(self, url = url, \
             headers = {'User-Agent': 'https://pleaseignore.com Maintainer: CogVokan@pleaseignore.com'})
         
@@ -103,9 +103,9 @@ def getKillMails(character_ID):
     return kms
 
 def getKillPerMonth(character_ID, month = '201606'):
-    stats_request = ZKillStatsRequest(character_ID, month)
+    stats_request = ZKillStatsRequest(character_ID)
     respond = urllib.request.urlopen(stats_request)
-    stats = eval(respond.read())
+    stats = json.loads(respond.read().decode('utf-8'))
     try:
         return stats['months'][month]['shipsDestroyed']
     except:
@@ -118,7 +118,7 @@ def checkActivity(year_and_month, member_list):
         corp_name = member.getCorpName()
         kill_count = member.getKillCounts(year_and_month)
         
-        output_file.write('{}/t{}/t{}/n'.format(member.main_character, corp_name, kill_count))
+        output_file.write('{}\t{}\t{}\n'.format(member.main_character, corp_name, kill_count))
         
     output_file.close()
         
