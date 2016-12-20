@@ -32,8 +32,6 @@ def getCorpName(character_ID):
     for row in xml_tree.iter('corporation'):
         corp_name = row.text
         
-    print(corp_name)
-
     return corp_name
 
 class ZKillRequest(urllib.request.Request):
@@ -115,14 +113,19 @@ def checkActivity(year_and_month, member_list):
     output_file = open('activity_{}.txt'.format(year_and_month), 'w')
     
     for member in member_list:
-        corp_name = member.getCorpName()
+        try:
+            corp_name = member.getCorpName()
+        except:
+            corp_name = 'coupbois'
         kill_count = member.getKillCounts(year_and_month)
         
         output_file.write('{}\t{}\t{}\n'.format(member.main_character, corp_name, kill_count))
+        print('{}\t{}\t{}'.format(member.main_character, corp_name, kill_count))
         
     output_file.close()
         
 def main():
+    month = input('Input the month you want to check (e.g. 201611): ')
     input_file = open('member_list.txt', 'r')
     members = []
     for line in input_file:
@@ -135,7 +138,7 @@ def main():
         
         members.append(new_member)
         
-    checkActivity('201611', members)
+    checkActivity(month, members)
         
 
 def test():
