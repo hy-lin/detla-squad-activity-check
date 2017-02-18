@@ -59,6 +59,7 @@ class ZKillStatsRequest(urllib.request.Request):
 class Member(object):
     def __init__(self, main_character):
         self.main_character = main_character
+        
         self.alts = []
         self.kms = []
         self.ratting_ticks = []
@@ -115,23 +116,23 @@ class Member(object):
         last_event_time = datetime.datetime(1969, 7, 20)
         
         for event in events:
-            
-            
             if event.time - last_event_time < event.duration:
                 activity += (event.time - last_event_time)
             else:
                 activity += event.duration
-                                
+            
+            print(activity, event.time, event.duration)
+            
             last_event_time = event.time
                 
         return activity
 
-def _getWalletJournalThroughAPI(character_ID):
+def _getWalletJournalThroughAPI(character_ID = '94853925', keyID = '6005092', vCode = 'Q0KJxh28GH5nrKAkDNSSKfSzza8t21lP7zXy4g1KbtjfYBvfS0qXB3NF9k81fGOM'):
     '''
     Placeholder code
     Please replace this part with your own API thingy.
     '''
-    api_address = "https://api.eveonline.com/char/WalletJournal.xml.aspx?characterID=94853925&rowCount=2560&keyID=6005092&vCode=VrTqRSYz7UqiIE1oQXvWoD6tjtRyN83nLqEbMVAOhbLtblgAxH7LWOzoSuwWBzr6"
+    api_address = "https://api.eveonline.com/char/WalletJournal.xml.aspx?characterID={}&rowCount=2560&keyID={}&vCode={}".format(character_ID, keyID, vCode)
     respond = urllib.request.urlopen(api_address)
     return respond.read()
         
@@ -208,7 +209,6 @@ def getKillMails(character_ID):
         if len(new_kms) < 200:
             keep_pulling = False    
 
-                
         page += 1
         
     return kms
@@ -216,7 +216,7 @@ def getKillMails(character_ID):
 def main():
     cog = Member('Cog Vokan')
     cog.getKrabScore()
-
+    
 if __name__ == '__main__':
     main()
     
