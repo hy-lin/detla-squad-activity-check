@@ -9,7 +9,6 @@ import xml.etree.ElementTree as ET
 import json
 import gzip
 
-
 class RattingTick(object):
     def __init__(self, amount, time):
         self.amount = float(amount)
@@ -27,21 +26,7 @@ class RattingTick(object):
     
     def __str__(self):
         return 'date: {}, amount: {}, duration: {}'.format(self.time, self.amount, self.duration)
-
-class ZKillRequest(urllib.request.Request):
-    def __init__(self, character_ID, page):
-        url = 'https://zkillboard.com/api/characterID/{}/page/{}/no-items/'.format(character_ID, page)
-        urllib.request.Request.__init__(self, url = url, \
-            headers = {'User-Agent': 'https://pleaseignore.com Maintainer: CogVokan@pleaseignore.com', \
-                       'Accept-Encoding': 'gzip'})
-        
-class ZKillStatsRequest(urllib.request.Request):
-    def __init__(self, character_ID):
-        url = 'https://zkillboard.com/api/stats/characterID/{}/'.format(character_ID)
-        urllib.request.Request.__init__(self, url = url, \
-            headers = {'User-Agent': 'https://pleaseignore.com Maintainer: CogVokan@pleaseignore.com', \
-                       'Accept-Encoding': 'gzip'})
-        
+    
 class KillMail(object):
     def __init__(self, zkb_info, owner_id):
         self.zkb_info = zkb_info
@@ -57,6 +42,19 @@ class KillMail(object):
             
         self.duration = datetime.timedelta(hours = 1)
         
+class ZKillRequest(urllib.request.Request):
+    def __init__(self, character_ID, page):
+        url = 'https://zkillboard.com/api/characterID/{}/page/{}/no-items/'.format(character_ID, page)
+        urllib.request.Request.__init__(self, url = url, \
+            headers = {'User-Agent': 'https://pleaseignore.com Maintainer: CogVokan@pleaseignore.com', \
+                       'Accept-Encoding': 'gzip'})
+        
+class ZKillStatsRequest(urllib.request.Request):
+    def __init__(self, character_ID):
+        url = 'https://zkillboard.com/api/stats/characterID/{}/'.format(character_ID)
+        urllib.request.Request.__init__(self, url = url, \
+            headers = {'User-Agent': 'https://pleaseignore.com Maintainer: CogVokan@pleaseignore.com', \
+                       'Accept-Encoding': 'gzip'})
         
 class Member(object):
     def __init__(self, main_character):
@@ -109,6 +107,7 @@ class Member(object):
         killing_time = self._getDuration(self.kms)
         
         print('Ratting time: {}; Killing time: {}; Ratio: {}'.format(ratting_time.total_seconds()/60, killing_time.total_seconds()/60, ratting_time/killing_time))
+        return ratting_time/killing_time
         
     def _getDuration(self, events):
         activity = datetime.timedelta(0, 0)
@@ -214,13 +213,11 @@ def getKillMails(character_ID):
         
     return kms
     
-def test():
-    ticks = getRattingHistory(999)
-    for tick in ticks:
-        print(tick)
-
-if __name__ == '__main__':
+def main():
     cog = Member('Cog Vokan')
     cog.getKrabScore()
+
+if __name__ == '__main__':
+    main()
     
     pass
