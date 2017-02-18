@@ -8,6 +8,43 @@ import datetime
 import xml.etree.ElementTree as ET
 import json
 
+def _getWalletJournalThroughAPI(character_ID):
+    '''
+    Placeholder code
+    Please replace this part with your own API thingy.
+    '''
+    api_address = "https://api.eveonline.com/char/WalletJournal.xml.aspx?characterID=94853925&rowCount=2560&keyID=6005092&vCode=VrTqRSYz7UqiIE1oQXvWoD6tjtRyN83nLqEbMVAOhbLtblgAxH7LWOzoSuwWBzr6"
+    respond = urllib.request.urlopen(api_address)
+    return respond.read()
+    
+class RattingTick(object):
+    def __init__(self, amount, time):
+        self.amount = float(amount)
+        self.time = time
+        
+    def getDuration(self):
+        scaler = self.amount / 1200.0 # assuming typical tick is 12m
+        
+        if scaler >= 1.0:
+            scaler = 1.0
+            
+        scaler = abs(scaler)
+            
+        return datetime.timedelta(0, 20) * scaler 
+    
+    def __str__(self):
+        return 'date: {}, amount: {}, duration: {}'.format(self.time, self.amount, self.getDuration())
+        
+def getRattingHistory(character_ID):
+    journal_history = _getWalletJournalThroughAPI(character_ID)
+    
+    xml_tree = ET.fromstring(journal_history)
+    ratting_ticks = []
+    for row in xml_tree.iter('row'):
+        if row.get('refTypeID') == '15': # 85 is the bounty reference type
+            ratting_ticks.append(RattingTick(row.get('amount'), row.get('date')))
+            
+    return ratting_ticks
 
 def getID(character_name):
     character_name = character_name.replace(' ', '%20')
@@ -23,7 +60,7 @@ def getID(character_name):
     return int(ID)
 
 def getCorpName(character_ID):
-    api_address =  'https://api.eveonline.com//eve/CharacterInfo.xml.aspx?characterID={}'.format(character_ID)
+    api_address =  'https://api.eveonline.com/eve/CharacterInfo.xml.aspx?characterID={}'.format(character_ID)
     respond = urllib.request.urlopen(api_address)
     character_info = respond.read()
     
@@ -86,7 +123,7 @@ def getKillMails(character_ID):
         km_time = km_time.strptime(new_kms[-1]['killTime'], '%Y-%m-%d %H:%M:%S')
         
         diff = current_time - km_time
-        if diff.days >= 100:
+        if diff.days >= 30:
             keep_pulling = False
         
         if len(new_kms) < 200:
@@ -142,10 +179,11 @@ def main():
         
 
 def test():
-    kms = getKillMails(94938154)
-    print(kms[0])
+    ticks = getRattingHistory(999)
+    for tick in ticks:
+        print(tick)
 
 if __name__ == '__main__':
-    main()
+    test()
     
     pass
