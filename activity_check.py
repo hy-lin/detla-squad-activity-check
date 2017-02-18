@@ -8,24 +8,33 @@ import datetime
 import xml.etree.ElementTree as ET
 import json
 
+def getResponse(address, tries = 0):
+    
+    if tries >= 5:
+        print('fail to retrieve address: {}'.format(address))
+        return 'fail'
+    
+    try:
+        respond = urllib.request.urlopen(address, timeout=5)
+        return respond.read()
+    except:
+        return getResponse(address, tries + 1)
 
 def getID(character_name):
     character_name = character_name.replace(' ', '%20')
     api_address =  'https://api.eveonline.com/eve/CharacterID.xml.aspx?names={}'.format(character_name)
-    respond = urllib.request.urlopen(api_address)
-    character_info = respond.read()
+
+    character_info = getResponse(api_address)
     
     xml_tree = ET.fromstring(character_info)
     for row in xml_tree.iter('row'):
         ID = row.get('characterID')
-    
 
     return int(ID)
 
 def getCorpName(character_ID):
     api_address =  'https://api.eveonline.com//eve/CharacterInfo.xml.aspx?characterID={}'.format(character_ID)
-    respond = urllib.request.urlopen(api_address)
-    character_info = respond.read()
+    character_info = getResponse(api_address)
     
     xml_tree = ET.fromstring(character_info)
     
