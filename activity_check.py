@@ -194,9 +194,9 @@ def getKillMails(character_ID):
         respond = urllib.request.urlopen(km_request)
         new_kms = json.loads(gzip.decompress(respond.read()).decode('utf-8'))
         
-        if len(new_kms) <= 0:
-            keep_pulling = False
-            break
+        # if len(new_kms) <= 0:
+        #     keep_pulling = False
+        #     break
         
         for new_km in new_kms:
             km = KillMail(new_km, character_ID)
